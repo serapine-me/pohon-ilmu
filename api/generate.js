@@ -109,7 +109,6 @@ ATURAN WAJIB:
 3. Contoh Konkret (dari kehidupan sehari-hari)
 4. Aktivitas Kelas (2-3 aktivitas praktis)\n\n`;
     }
-
     if (incl_pg) {
       prompt += `=== SOAL PILIHAN GANDA ===
 Buat ${nPG} soal tingkat ${validDiff}. Format SETIAP soal:
@@ -119,13 +118,11 @@ Buat ${nPG} soal tingkat ${validDiff}. Format SETIAP soal:
    C. [pilihan]
    D. [pilihan]\n\n`;
     }
-
     if (incl_isian) {
       prompt += `=== SOAL ISIAN ===
 Buat ${nIsian} soal tingkat ${validDiff}. Format:
 1. [kalimat dengan _____ untuk diisi]\n\n`;
     }
-
     if (incl_essay) {
       prompt += `=== SOAL ESSAY ===
 Buat ${nEssay} soal tingkat ${validDiff}. Format:
@@ -137,30 +134,29 @@ Buat ${nEssay} soal tingkat ${validDiff}. Format:
     if (incl_isian) prompt += `KUNCI ISIAN:\n1. [jawaban]\n(lanjutkan semua)\n\n`;
     if (incl_essay) prompt += `PANDUAN ESSAY:\n1. [poin-poin jawaban yang diharapkan]\n(lanjutkan semua)\n`;
 
-    // ── 5. PANGGIL GEMINI API ──────────────────────────────
-    const geminiKey = process.env.GEMINI_API_KEY.trim();
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
-
-    const geminiRes = await fetch(geminiUrl, {
+    // ── 5. PANGGIL GROQ API ────────────────────────────────
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY.trim()}`
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 4000
-        }
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 4000,
+        temperature: 0.7
       })
     });
 
-    if (!geminiRes.ok) {
-      const errData = await geminiRes.json();
-      throw new Error(`Gemini error: ${errData.error?.message || geminiRes.status}`);
+    if (!groqRes.ok) {
+      const errData = await groqRes.json();
+      throw new Error(`Groq error: ${errData.error?.message || groqRes.status}`);
     }
 
-    const geminiData = await geminiRes.json();
-    const rawText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!rawText) throw new Error('Gemini tidak mengembalikan teks');
+    const groqData = await groqRes.json();
+    const rawText = groqData.choices?.[0]?.message?.content;
+    if (!rawText) throw new Error('Groq tidak mengembalikan teks');
 
     // ── 6. PARSE RESPONSE ──────────────────────────────────
     function extract(text, startMarker, endMarkers) {
@@ -191,10 +187,10 @@ Buat ${nEssay} soal tingkat ${validDiff}. Format:
       difficulty: validDiff,
       incl_materi, incl_pg, incl_isian, incl_essay,
       jumlah_pg: nPG, jumlah_isian: nIsian, jumlah_essay: nEssay,
-      result_materi:    parsed.materi,
-      result_pg:        parsed.pg,
-      result_isian:     parsed.isian,
-      result_essay:     parsed.essay,
+      result_materi:      parsed.materi,
+      result_pg:          parsed.pg,
+      result_isian:       parsed.isian,
+      result_essay:       parsed.essay,
       result_kunci_pg:    parsed.kunci_pg,
       result_kunci_isian: parsed.kunci_isian,
       result_kunci_essay: parsed.kunci_essay

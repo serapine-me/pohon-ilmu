@@ -139,7 +139,7 @@ Buat ${nEssay} soal tingkat ${validDiff}. Format:
 
     // ── 5. PANGGIL GEMINI API ──────────────────────────────
     const geminiKey = process.env.GEMINI_API_KEY.trim();
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
 
     const geminiRes = await fetch(geminiUrl, {
       method: 'POST',

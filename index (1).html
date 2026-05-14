@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pohon Ilmu — Belajar di Rumah</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:#FFF8EE; --brown:#7B4F2E; --green:#4A8C3F;
+    --green-light:#6DB560; --shadow:0 4px 20px rgba(0,0,0,0.08); --radius:20px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Nunito',sans-serif;background:var(--cream);min-height:100vh;}
+
+  header{background:linear-gradient(135deg,#3A7A30,#5BA854,#2A9D98);padding:24px 20px 52px;text-align:center;}
+  header span{font-size:36px;display:block;margin-bottom:4px;}
+  header h1{font-family:'Baloo 2',cursive;font-size:24px;font-weight:800;color:#fff;}
+  header p{color:rgba(255,255,255,0.8);font-size:12px;margin-top:3px;}
+
+  .tabs-wrap{margin-top:-36px;padding:0 12px;overflow-x:auto;scrollbar-width:none;}
+  .tabs-wrap::-webkit-scrollbar{display:none;}
+  .tabs{display:flex;gap:8px;padding-bottom:4px;min-width:max-content;}
+  .tab{background:#fff;border:2.5px solid #e8e0d4;border-radius:50px;padding:8px 16px;font-family:'Baloo 2',cursive;font-size:13px;font-weight:700;color:#999;cursor:pointer;transition:all 0.2s;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+  .tab.active{color:#fff!important;border-color:transparent;box-shadow:0 4px 14px rgba(0,0,0,0.2);}
+
+  main{padding:16px 14px 48px;max-width:600px;margin:0 auto;}
+
+  .banner{border-radius:16px;padding:14px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+  .banner .bi{font-size:30px;flex-shrink:0;}
+  .banner h3{font-family:'Baloo 2',cursive;font-size:15px;font-weight:800;color:#fff;}
+  .banner p{font-size:11px;color:rgba(255,255,255,0.85);margin-top:2px;}
+
+  .slabel{font-family:'Baloo 2',cursive;font-size:12px;font-weight:700;color:var(--brown);letter-spacing:1px;text-transform:uppercase;margin-bottom:9px;padding-left:2px;}
+
+  .subj-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:20px;}
+  .subj-card{background:#fff;border-radius:14px;padding:12px 10px;cursor:pointer;transition:all 0.2s;border:2.5px solid transparent;box-shadow:var(--shadow);display:flex;align-items:center;gap:9px;}
+  .subj-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,0.11);}
+  .subj-card.active{border-color:currentColor;background:var(--cream);}
+  .subj-card .si{font-size:24px;flex-shrink:0;}
+  .subj-card .sn{font-family:'Baloo 2',cursive;font-size:12.5px;font-weight:700;line-height:1.25;}
+  .subj-card .sc{font-size:10px;font-weight:700;opacity:.55;letter-spacing:.8px;text-transform:uppercase;}
+
+  .chapter-wrap{background:#fff;border-radius:var(--radius);padding:18px;margin-bottom:20px;box-shadow:var(--shadow);}
+  .chapter-wrap h3{font-family:'Baloo 2',cursive;font-size:14px;font-weight:700;color:var(--brown);margin-bottom:12px;}
+  .chapter-list{display:flex;flex-direction:column;gap:8px;}
+  .chapter-btn{background:var(--cream);border:2px solid #e8e0d4;border-radius:12px;padding:11px 14px;text-align:left;cursor:pointer;transition:all 0.2s;font-family:'Nunito',sans-serif;}
+  .chapter-btn:hover{border-color:#c8b89a;background:#f5ede0;}
+  .chapter-btn.active{border-color:var(--green);background:#f0faf0;}
+  .chapter-btn .cn{font-family:'Baloo 2',cursive;font-size:11px;font-weight:700;color:var(--green);letter-spacing:.8px;text-transform:uppercase;}
+  .chapter-btn .ct{font-size:13px;font-weight:600;color:#333;margin-top:2px;}
+
+  .config-card{background:#fff;border-radius:var(--radius);padding:18px;margin-bottom:20px;box-shadow:var(--shadow);}
+  .config-card h3{font-family:'Baloo 2',cursive;font-size:14px;font-weight:700;color:var(--brown);margin-bottom:12px;}
+
+  .diff-row{display:flex;gap:8px;margin-bottom:16px;}
+  .diff-btn{flex:1;padding:10px 6px;border-radius:12px;border:2.5px solid #e8e0d4;background:#fff;font-family:'Baloo 2',cursive;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;text-align:center;}
+  .diff-btn.mudah.active{background:#e8f8e8;border-color:#4A8C3F;color:#4A8C3F;}
+  .diff-btn.sedang.active{background:#fff3e0;border-color:#F4843D;color:#F4843D;}
+  .diff-btn.sulit.active{background:#fde8e8;border-color:#E8607A;color:#E8607A;}
+
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f0e8;}
+  .toggle-row:last-child{border-bottom:none;}
+  .toggle-row .tl{font-size:13px;font-weight:600;color:#444;display:flex;align-items:center;gap:7px;}
+  .toggle-row .tr{display:flex;align-items:center;gap:8px;}
+  .toggle-row input[type=number]{width:50px;padding:4px 6px;border:2px solid #e0ddd6;border-radius:8px;font-family:'Baloo 2',cursive;font-size:14px;font-weight:700;color:var(--brown);text-align:center;outline:none;}
+  .toggle-row input[type=number]:focus{border-color:var(--green);}
+  .toggle-row small{font-size:11px;color:#aaa;}
+  .toggle{position:relative;width:42px;height:23px;flex-shrink:0;}
+  .toggle input{opacity:0;width:0;height:0;}
+  .toggle-slider{position:absolute;inset:0;background:#ddd;border-radius:23px;cursor:pointer;transition:background 0.2s;}
+  .toggle-slider::before{content:'';position:absolute;width:17px;height:17px;left:3px;top:3px;background:white;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .toggle input:checked+.toggle-slider{background:var(--green);}
+  .toggle input:checked+.toggle-slider::before{transform:translateX(19px);}
+
+  .btn-gen{width:100%;padding:15px;background:linear-gradient(135deg,var(--green),var(--green-light));color:white;border:none;border-radius:15px;font-family:'Baloo 2',cursive;font-size:16px;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(74,140,63,.32);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;}
+  .btn-gen:hover:not(:disabled){transform:translateY(-2px);}
+  .btn-gen:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+  .loading{background:#fff;border-radius:var(--radius);padding:36px 20px;text-align:center;box-shadow:var(--shadow);margin-bottom:20px;display:none;}
+  .loading.show{display:block;}
+  .ltree{font-size:46px;animation:bounce .75s infinite alternate;display:block;}
+  @keyframes bounce{from{transform:scale(1)}to{transform:scale(1.14) translateY(-5px)}}
+  .loading p{font-family:'Baloo 2',cursive;font-size:14px;color:var(--green);font-weight:700;margin-top:10px;}
+  .loading small{color:#bbb;font-size:11px;}
+  .dots::after{content:'';animation:dots 1.5s infinite;}
+  @keyframes dots{0%{content:'.'}33%{content:'..'}66%{content:'...'}}
+
+  .cache-badge{display:inline-flex;align-items:center;gap:4px;background:#e8f8e8;color:#2a7a2a;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;}
+
+  .result{display:none;animation:fadeUp .35s ease;}
+  .result.show{display:block;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+  .rhead{border-radius:var(--radius) var(--radius) 0 0;padding:16px 18px;color:white;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .rhead .ri{font-size:28px;}
+  .rhead h2{font-family:'Baloo 2',cursive;font-size:16px;font-weight:800;}
+  .rhead p{font-size:11px;opacity:.82;}
+  .rhead .bw{margin-left:auto;}
+
+  .ptabs{display:flex;background:#f5f0e8;border-bottom:1px solid #e8e0d0;}
+  .ptab{flex:1;padding:10px;font-family:'Baloo 2',cursive;font-size:13px;font-weight:700;color:#888;background:none;border:none;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:5px;border-bottom:3px solid transparent;}
+  .ptab.active{color:var(--brown);border-bottom-color:var(--brown);background:#fff;}
+
+  .rcontent{background:#fff;overflow:hidden;box-shadow:var(--shadow);}
+  .rpage{display:none;}
+  .rpage.active{display:block;}
+  .rsec{padding:18px;border-bottom:1px solid #f5f0e8;}
+  .rsec:last-child{border-bottom:none;}
+  .rsec-title{font-family:'Baloo 2',cursive;font-size:13px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+  .rtext{font-size:13px;line-height:1.75;color:#333;white-space:pre-wrap;}
+
+  .ksec{padding:18px;border-bottom:1px solid #f5f0e8;}
+  .ksec:last-child{border-bottom:none;}
+  .ksec-title{font-family:'Baloo 2',cursive;font-size:13px;font-weight:800;margin-bottom:12px;}
+  .klist{display:flex;flex-direction:column;gap:8px;}
+  .kitem{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fafaf7;border-radius:10px;border:1.5px solid #eee;transition:all 0.2s;}
+  .kitem.checked{background:#f0faf0;border-color:#a8d8a0;}
+  .kitem input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);flex-shrink:0;margin-top:2px;cursor:pointer;}
+  .kitem label{font-size:13px;line-height:1.6;color:#333;cursor:pointer;flex:1;}
+  .kitem.checked label{color:#2a7a2a;}
+  .knum{font-family:'Baloo 2',cursive;font-weight:800;color:var(--brown);flex-shrink:0;font-size:13px;min-width:22px;}
+
+  .kstats{background:#fff8ee;border-radius:12px;padding:12px 16px;margin:14px 18px 0;display:flex;align-items:center;justify-content:space-between;border:1.5px solid #e8d8c0;}
+  .kstats span{font-family:'Baloo 2',cursive;font-size:13px;color:var(--brown);font-weight:700;}
+  .kstats .score{font-size:18px;color:var(--green);}
+  .btn-reset{padding:6px 14px;background:none;border:1.5px solid #ccc;border-radius:8px;font-family:'Baloo 2',cursive;font-size:12px;font-weight:700;color:#888;cursor:pointer;}
+  .btn-reset:hover{border-color:var(--brown);color:var(--brown);}
+
+  .arow{display:flex;gap:9px;padding:12px 18px;background:#fff;border-radius:0 0 var(--radius) var(--radius);border-top:1px solid #f0ece4;}
+  .btn-copy,.btn-print{flex:1;padding:11px;border-radius:11px;border:none;font-family:'Baloo 2',cursive;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:5px;}
+  .btn-copy{background:var(--cream);color:var(--brown);border:2px solid #e0d8cc;}
+  .btn-print{background:var(--brown);color:white;}
+
+  .empty{text-align:center;padding:36px 20px;color:#bbb;}
+  .empty .ei{font-size:48px;margin-bottom:8px;display:block;}
+  .empty p{font-family:'Baloo 2',cursive;font-size:13px;}
+
+  .err{background:#fde8e8;border:1.5px solid #f5a0a0;border-radius:14px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#c03030;display:none;}
+  .err.show{display:block;}
+
+  .skeleton{background:linear-gradient(90deg,#f0ece4 25%,#faf6f0 50%,#f0ece4 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;height:14px;margin-bottom:8px;}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  @media print{
+    header,.tabs-wrap,.banner,.subj-grid,.chapter-wrap,.config-card,.btn-gen,.arow,.loading,.empty,.slabel,.ptabs,.kstats,.err{display:none!important;}
+    .result{display:block!important;}
+    .rpage{display:block!important;}
+    body{background:white;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span>🌳</span>
+  <h1>Pohon Ilmu</h1>
+  <p>Belajar di Rumah — TK B hingga SD Kelas 6</p>
+</header>
+
+<div class="tabs-wrap"><div class="tabs" id="tabs"></div></div>
+
+<main>
+  <div class="banner" id="banner" style="background:linear-gradient(135deg,#4A8C3Fee,#4A8C3F99)">
+    <div class="bi">🌳</div>
+    <div>
+      <h3 id="bannerTitle">Memuat kurikulum...</h3>
+      <p id="bannerSub">Mohon tunggu sebentar</p>
+    </div>
+  </div>
+
+  <div class="err" id="errBox"></div>
+
+  <div id="step1" style="display:none">
+    <div class="slabel" id="step1Label">1. Pilih Mata Pelajaran</div>
+    <div class="subj-grid" id="subjGrid"></div>
+  </div>
+
+  <div id="step2" style="display:none">
+    <div class="slabel">2. Pilih Bab</div>
+    <div class="chapter-wrap">
+      <h3 id="chapSubjTitle">Pilih bab yang sedang dipelajari:</h3>
+      <div class="chapter-list" id="chapList"></div>
+    </div>
+  </div>
+
+  <div id="step3" style="display:none">
+    <div class="slabel">3. Atur Soal</div>
+    <div class="config-card">
+      <h3>🎯 Tingkat Kesulitan</h3>
+      <div class="diff-row">
+        <button class="diff-btn mudah active" onclick="setDiff('mudah',this)">😊 Mudah</button>
+        <button class="diff-btn sedang" onclick="setDiff('sedang',this)">🤔 Sedang</button>
+        <button class="diff-btn sulit" onclick="setDiff('sulit',this)">🔥 Sulit</button>
+      </div>
+      <h3 style="margin-bottom:12px">📝 Jenis & Jumlah Soal</h3>
+      <div class="toggle-row">
+        <div class="tl"><span>📖</span> Materi Pembelajaran</div>
+        <div class="tr"><label class="toggle"><input type="checkbox" id="tMateri" checked><span class="toggle-slider"></span></label></div>
+      </div>
+      <div class="toggle-row" id="rPG">
+        <div class="tl"><span>🔘</span> Pilihan Ganda</div>
+        <div class="tr">
+          <input type="number" id="nPG" value="5" min="1" max="20">
+          <small>soal</small>
+          <label class="toggle"><input type="checkbox" id="tPG" checked onchange="document.getElementById('rPG').style.opacity=this.checked?'1':'0.5'"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+      <div class="toggle-row" id="rIsian">
+        <div class="tl"><span>✏️</span> Soal Isian</div>
+        <div class="tr">
+          <input type="number" id="nIsian" value="5" min="1" max="20">
+          <small>soal</small>
+          <label class="toggle"><input type="checkbox" id="tIsian" checked onchange="document.getElementById('rIsian').style.opacity=this.checked?'1':'0.5'"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+      <div class="toggle-row" id="rEssay">
+        <div class="tl"><span>📄</span> Soal Essay</div>
+        <div class="tr">
+          <input type="number" id="nEssay" value="3" min="1" max="10">
+          <small>soal</small>
+          <label class="toggle"><input type="checkbox" id="tEssay" checked onchange="document.getElementById('rEssay').style.opacity=this.checked?'1':'0.5'"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-gen" id="btnGen" onclick="generate()" disabled>
+    <span>🌱</span> Pilih mapel & bab dulu...
+  </button>
+
+  <div class="loading" id="loading">
+    <span class="ltree">🌳</span>
+    <p>Sedang menyiapkan materi<span class="dots"></span></p>
+    <small id="loadNote">Pertama kali ~15–30 detik, berikutnya instan dari cache ⚡</small>
+  </div>
+
+  <div class="result" id="result">
+    <div class="rhead" id="rhead">
+      <div class="ri" id="rIcon">📚</div>
+      <div style="flex:1">
+        <h2 id="rTitle">Hasil</h2>
+        <p id="rSub">Materi & Soal</p>
+      </div>
+      <div class="bw" id="badgeWrap"></div>
+    </div>
+    <div class="ptabs">
+      <button class="ptab active" onclick="switchPage('soal',this)">📝 Soal</button>
+      <button class="ptab" onclick="switchPage('kunci',this)">✅ Kunci Jawaban</button>
+    </div>
+    <div class="rcontent">
+      <div class="rpage active" id="pageSoal">
+        <div id="secMateri" class="rsec" style="display:none">
+          <div class="rsec-title" style="color:#4A8C3F">📖 Materi Pembelajaran</div>
+          <div class="rtext" id="txtMateri"></div>
+        </div>
+        <div id="secPG" class="rsec" style="display:none">
+          <div class="rsec-title" style="color:#4A90D9">🔘 Soal Pilihan Ganda</div>
+          <div class="rtext" id="txtPG"></div>
+        </div>
+        <div id="secIsian" class="rsec" style="display:none">
+          <div class="rsec-title" style="color:#F4843D">✏️ Soal Isian</div>
+          <div class="rtext" id="txtIsian"></div>
+        </div>
+        <div id="secEssay" class="rsec" style="display:none">
+          <div class="rsec-title" style="color:#E8607A">📄 Soal Essay</div>
+          <div class="rtext" id="txtEssay"></div>
+        </div>
+      </div>
+      <div class="rpage" id="pageKunci">
+        <div class="kstats">
+          <span>💡 Centang soal yang sudah diperiksa</span>
+          <span class="score" id="kScore">0 / 0</span>
+          <button class="btn-reset" onclick="resetCheck()">Reset</button>
+        </div>
+        <div id="kSecPG" class="ksec" style="display:none">
+          <div class="ksec-title" style="color:#4A90D9">🔘 Kunci Pilihan Ganda</div>
+          <div class="klist" id="kListPG"></div>
+        </div>
+        <div id="kSecIsian" class="ksec" style="display:none">
+          <div class="ksec-title" style="color:#F4843D">✏️ Kunci Isian</div>
+          <div class="klist" id="kListIsian"></div>
+        </div>
+        <div id="kSecEssay" class="ksec" style="display:none">
+          <div class="ksec-title" style="color:#E8607A">📄 Panduan Essay</div>
+          <div class="klist" id="kListEssay"></div>
+        </div>
+      </div>
+    </div>
+    <div class="arow">
+      <button class="btn-copy" onclick="copyAll()">📋 Salin Soal</button>
+      <button class="btn-print" onclick="window.print()">🖨️ Cetak</button>
+    </div>
+  </div>
+
+  <div class="empty" id="empty">
+    <span class="ei">🌱</span>
+    <p>Pilih jenjang, mata pelajaran, dan bab<br>untuk mulai belajar bersama!</p>
+  </div>
+</main>
+
+<script>
+// Vercel Functions dipanggil langsung — tidak perlu URL eksternal
+const API_CURRICULUM = '/api/curriculum';
+const API_GENERATE   = '/api/generate';
+
+let curriculum = [], selectedLevel = null, selectedSubject = null, selectedChapter = null, selectedDiff = 'mudah';
+
+// ── INIT ──────────────────────────────────────────────────
+async function init() {
+  try {
+    const res = await fetch(API_CURRICULUM);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Gagal');
+    curriculum = data.data;
+    buildTabs();
+    selectLevel(0);
+  } catch(e) {
+    showErr('Gagal memuat kurikulum: ' + e.message);
+    document.getElementById('bannerTitle').textContent = 'Gagal memuat';
+  }
+}
+
+function buildTabs() {
+  const el = document.getElementById('tabs');
+  el.innerHTML = '';
+  curriculum.forEach((lvl, i) => {
+    const t = document.createElement('div');
+    t.className = 'tab';
+    t.textContent = `${lvl.icon} ${lvl.label}`;
+    t.onclick = () => selectLevel(i, t);
+    el.appendChild(t);
+  });
+}
+
+function selectLevel(i) {
+  selectedLevel = curriculum[i];
+  selectedSubject = null;
+  selectedChapter = null;
+
+  document.querySelectorAll('.tab').forEach((t,idx) => {
+    t.classList.toggle('active', idx === i);
+    t.style.background = idx === i ? selectedLevel.color : '';
+    t.style.color = idx === i ? '#fff' : '';
+  });
+
+  document.getElementById('bannerIcon') && (document.getElementById('bannerIcon').textContent = selectedLevel.icon);
+  document.getElementById('bannerTitle').textContent = selectedLevel.label;
+  document.getElementById('bannerSub').textContent = selectedLevel.sub || '';
+  document.getElementById('banner').style.background = `linear-gradient(135deg,${selectedLevel.color}ee,${selectedLevel.color}99)`;
+
+  renderSubjects();
+  document.getElementById('step1').style.display = 'block';
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step3').style.display = 'none';
+  resetBtn();
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('empty').style.display = 'block';
+}
+
+function renderSubjects() {
+  const grid = document.getElementById('subjGrid');
+  grid.innerHTML = '';
+  (selectedLevel.subjects || []).forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'subj-card';
+    card.style.color = s.color;
+    card.innerHTML = `<div class="si">${s.icon}</div><div><div class="sc">Mapel</div><div class="sn">${s.name}</div></div>`;
+    card.onclick = () => selectSubject(card, s);
+    grid.appendChild(card);
+  });
+}
+
+function selectSubject(el, s) {
+  document.querySelectorAll('.subj-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedSubject = s;
+  selectedChapter = null;
+  document.getElementById('chapSubjTitle').textContent = `${s.name} — pilih bab:`;
+  const list = document.getElementById('chapList');
+  list.innerHTML = '';
+  (s.chapters || []).forEach(ch => {
+    const btn = document.createElement('button');
+    btn.className = 'chapter-btn';
+    btn.innerHTML = `<div class="cn">Bab ${ch.number}</div><div class="ct">${ch.title}</div>`;
+    btn.onclick = () => selectChapter(btn, ch);
+    list.appendChild(btn);
+  });
+  document.getElementById('step2').style.display = 'block';
+  document.getElementById('step3').style.display = 'none';
+  resetBtn();
+}
+
+function selectChapter(el, ch) {
+  document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedChapter = ch;
+  document.getElementById('step3').style.display = 'block';
+  const btn = document.getElementById('btnGen');
+  btn.disabled = false;
+  btn.innerHTML = `<span>${selectedSubject.icon}</span> Generate Bab ${ch.number}: ${ch.title}`;
+  btn.style.background = `linear-gradient(135deg,${selectedSubject.color}cc,${selectedSubject.color})`;
+  document.getElementById('empty').style.display = 'none';
+}
+
+function setDiff(d, el) {
+  selectedDiff = d;
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function resetBtn() {
+  const btn = document.getElementById('btnGen');
+  btn.disabled = true;
+  btn.innerHTML = '<span>🌱</span> Pilih mapel & bab dulu...';
+  btn.style.background = 'linear-gradient(135deg,#4A8C3F,#6DB560)';
+}
+
+// ── GENERATE ──────────────────────────────────────────────
+async function generate() {
+  if (!selectedChapter) return;
+
+  const params = {
+    chapter_id:  selectedChapter.id,
+    difficulty:  selectedDiff,
+    incl_materi: document.getElementById('tMateri').checked,
+    incl_pg:     document.getElementById('tPG').checked,
+    incl_isian:  document.getElementById('tIsian').checked,
+    incl_essay:  document.getElementById('tEssay').checked,
+    jumlah_pg:   +document.getElementById('nPG').value,
+    jumlah_isian:+document.getElementById('nIsian').value,
+    jumlah_essay:+document.getElementById('nEssay').value
+  };
+
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('btnGen').disabled = true;
+  document.getElementById('empty').style.display = 'none';
+  showErr('');
+
+  try {
+    const res  = await fetch(API_GENERATE, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(params) });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Generate gagal');
+
+    const d = data.data;
+    const isCache = d.source === 'cache';
+
+    document.getElementById('rIcon').textContent  = selectedSubject.icon;
+    document.getElementById('rTitle').textContent = `Bab ${selectedChapter.number}: ${selectedChapter.title}`;
+    document.getElementById('rSub').textContent   = `${selectedLevel.label} · ${selectedSubject.name} · ${selectedDiff[0].toUpperCase()+selectedDiff.slice(1)}`;
+    document.getElementById('rhead').style.background = `linear-gradient(135deg,${selectedSubject.color}dd,${selectedSubject.color})`;
+    document.getElementById('badgeWrap').innerHTML = isCache ? '<span class="cache-badge">⚡ Dari cache</span>' : '';
+
+    fill('secMateri','txtMateri', params.incl_materi && d.materi, d.materi);
+    fill('secPG',    'txtPG',    params.incl_pg    && d.pg,     d.pg);
+    fill('secIsian', 'txtIsian', params.incl_isian  && d.isian,  d.isian);
+    fill('secEssay', 'txtEssay', params.incl_essay  && d.essay,  d.essay);
+
+    buildKunci('kSecPG',    'kListPG',    params.incl_pg    && d.kunci_pg,    d.kunci_pg);
+    buildKunci('kSecIsian', 'kListIsian', params.incl_isian  && d.kunci_isian, d.kunci_isian);
+    buildKunci('kSecEssay', 'kListEssay', params.incl_essay  && d.kunci_essay, d.kunci_essay);
+    updateScore();
+
+    document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.rpage').forEach(p => p.classList.remove('active'));
+    document.querySelector('.ptab').classList.add('active');
+    document.getElementById('pageSoal').classList.add('active');
+
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('result').classList.add('show');
+
+  } catch(e) {
+    document.getElementById('loading').classList.remove('show');
+    showErr('Gagal generate: ' + e.message);
+  }
+  document.getElementById('btnGen').disabled = false;
+}
+
+function fill(secId, txtId, show, content) {
+  const sec = document.getElementById(secId);
+  if (show && content) { sec.style.display='block'; document.getElementById(txtId).textContent=content; }
+  else sec.style.display='none';
+}
+
+// ── KUNCI ─────────────────────────────────────────────────
+function buildKunci(secId, listId, show, content) {
+  const sec  = document.getElementById(secId);
+  const list = document.getElementById(listId);
+  list.innerHTML = '';
+  if (!show || !content) { sec.style.display='none'; return; }
+  sec.style.display='block';
+
+  let items=[], cur=null;
+  content.trim().split('\n').filter(l=>l.trim()).forEach(line => {
+    const m = line.match(/^(\d+)\.\s+(.+)/);
+    if (m) { if(cur) items.push(cur); cur={num:m[1],text:m[2]}; }
+    else if(cur) cur.text += ' '+line.trim();
+  });
+  if(cur) items.push(cur);
+  if(!items.length) items=[{num:'—',text:content.trim()}];
+
+  items.forEach((item,idx) => {
+    const uid = `k_${secId}_${idx}`;
+    const div = document.createElement('div');
+    div.className='kitem'; div.id=`ki_${uid}`;
+    div.innerHTML=`<input type="checkbox" id="${uid}" onchange="onCheck('${uid}')"><span class="knum">${item.num}.</span><label for="${uid}">${item.text}</label>`;
+    list.appendChild(div);
+  });
+}
+
+function onCheck(uid) {
+  document.getElementById(`ki_${uid}`).classList.toggle('checked', document.getElementById(uid).checked);
+  updateScore();
+}
+function updateScore() {
+  const all=document.querySelectorAll('#pageKunci input[type=checkbox]');
+  const chk=document.querySelectorAll('#pageKunci input[type=checkbox]:checked');
+  document.getElementById('kScore').textContent=`${chk.length} / ${all.length}`;
+}
+function resetCheck() {
+  document.querySelectorAll('#pageKunci input[type=checkbox]').forEach(c=>c.checked=false);
+  document.querySelectorAll('.kitem').forEach(i=>i.classList.remove('checked'));
+  updateScore();
+}
+function switchPage(page, btn) {
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.rpage').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(page==='soal'?'pageSoal':'pageKunci').classList.add('active');
+}
+function copyAll() {
+  const parts=[];
+  ['txtMateri','txtPG','txtIsian','txtEssay'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el?.parentElement?.style.display!=='none'&&el?.textContent?.trim()) parts.push(el.textContent.trim());
+  });
+  navigator.clipboard.writeText(parts.join('\n\n---\n\n')).then(()=>{
+    const btn=document.querySelector('.btn-copy');
+    btn.textContent='✅ Tersalin!';
+    setTimeout(()=>btn.textContent='📋 Salin Soal',2000);
+  });
+}
+function showErr(msg) {
+  const b=document.getElementById('errBox');
+  b.textContent=msg; b.classList.toggle('show',!!msg);
+}
+
+init();
+</script>
+</body>
+</html>

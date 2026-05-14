@@ -1,0 +1,8 @@
+{
+  "name": "pohon-ilmu",
+  "version": "1.0.0",
+  "description": "Pohon Ilmu - Generator Materi & Soal TK B - SD Kelas 6",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
